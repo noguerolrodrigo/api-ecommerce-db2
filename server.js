@@ -14,6 +14,8 @@ import userRoutes from './routes/user.routes.js';
 import categoryRoutes from './routes/category.routes.js'; 
 import productRoutes from './routes/product.routes.js';
 import cartRoutes from './routes/cart.routes.js';
+import orderRoutes from './routes/order.routes.js';
+
 
 // ... (dotenv.config(), connectDB())
 
@@ -39,6 +41,7 @@ app.use('/api/usuarios', userRoutes);
 app.use('/api/categorias', categoryRoutes);
 app.use('/api/productos', productRoutes);
 app.use('/api/carrito', cartRoutes);
+app.use('/api/ordenes', orderRoutes);
 
 // Ponemos el servidor a escuchar
 app.listen(PORT, () => {
