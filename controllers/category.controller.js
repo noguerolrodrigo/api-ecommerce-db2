@@ -1,4 +1,5 @@
 import Category from '../models/Category.js';
+import Product from '../models/Product.js';
 
 // --- (POST) Crear nueva categoría (Solo Admin) ---
 export const createCategory = async (req, res) => {
@@ -64,6 +65,44 @@ export const deleteCategory = async (req, res) => {
     }
     // (Opcional: aquí deberías verificar si algún producto usa esta categoría)
     res.json({ success: true, data: { message: 'Categoría eliminada' } });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+// --- (GET) AGREGACIÓN: Cantidad de productos por categoría ---
+// GET /api/categorias/stats
+export const getCategoryStats = async (req, res) => {
+  try {
+    const stats = await Product.aggregate([
+      // 1. Agrupar por el campo 'categoria'
+      {
+        $group: {
+          _id: '$categoria',
+          // --- Operador $count ---
+          totalProductos: { $sum: 1 },
+        },
+      },
+      // 2. Traer los datos de la categoría
+      {
+        $lookup: {
+          from: 'categories',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'categoriaData',
+        },
+      },
+      { $unwind: '$categoriaData' },
+      // 3. Limpiar la salida
+      {
+        $project: {
+          _id: 0,
+          categoriaId: '$_id',
+          nombreCategoria: '$categoriaData.nombre',
+          totalProductos: 1,
+        },
+      },
+    ]);
+    res.json({ success: true, data: stats });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }

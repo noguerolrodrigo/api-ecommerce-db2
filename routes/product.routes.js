@@ -3,7 +3,8 @@ import {
   createProduct,
   getAllProducts,
   filterProducts,
-  updateStock
+  updateStock,
+  getTopProducts
 } from '../controllers/product.controller.js';
 import { checkAuth, checkAdmin } from '../middlewares/auth.middleware.js';
 
@@ -16,7 +17,8 @@ router.get('/', getAllProducts);
 // GET /api/productos/filtro (Filtrar por precio y marca)
 router.get('/filtro', filterProducts);
 
-// (Faltaría GET /api/productos/top - la hacemos después con Agregaciones)
+// GET /api/productos/top (NUEVA RUTA DE AGREGACIÓN)
+router.get('/top', getTopProducts);
 
 // --- Rutas de Admin ---
 // POST /api/productos (Crear producto)

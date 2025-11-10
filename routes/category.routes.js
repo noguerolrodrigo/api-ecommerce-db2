@@ -3,7 +3,8 @@ import {
   createCategory,
   getAllCategories,
   updateCategory,
-  deleteCategory
+  deleteCategory,
+  getCategoryStats,
 } from '../controllers/category.controller.js';
 import { checkAuth, checkAdmin } from '../middlewares/auth.middleware.js';
 
@@ -12,6 +13,9 @@ const router = express.Router();
 // --- Rutas Públicas ---
 // GET /api/categorias (Listar todas)
 router.get('/', getAllCategories);
+
+// GET /api/categorias/stats (NUEVA RUTA DE AGREGACIÓN)
+router.get('/stats', getCategoryStats); //
 
 // --- Rutas de Admin ---
 // (Requieren token válido y rol de admin)

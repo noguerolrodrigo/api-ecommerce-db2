@@ -1,5 +1,6 @@
 import Product from '../models/Product.js';
 import Category from '../models/Category.js'; // Lo necesitamos para validar
+import Review from '../models/Review.js';
 
 // --- (POST) Crear nuevo producto (Solo Admin) ---
 export const createProduct = async (req, res) => {
@@ -99,6 +100,48 @@ export const updateStock = async (req, res) => {
       return res.status(404).json({ success: false, error: 'Producto no encontrado' });
     }
     res.json({ success: true, data: product });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+// --- (GET) AGREGACIÓN: Productos más reseñados ---
+// GET /api/productos/top
+export const getTopProducts = async (req, res) => {
+  try {
+    const stats = await Review.aggregate([
+      // 1. Agrupar por producto y contar reseñas
+      {
+        $group: {
+          _id: '$producto',
+          totalResenas: { $sum: 1 },
+        },
+      },
+      // 2. Ordenar por cantidad de reseñas (descendente)
+      {
+        $sort: { totalResenas: -1 },
+      },
+      // 3. Traer los datos del producto
+      {
+        $lookup: {
+          from: 'products',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'productoData',
+        },
+      },
+      { $unwind: '$productoData' },
+      // 4. Limpiar la salida
+      {
+        $project: {
+          _id: 0,
+          productoId: '$_id',
+          nombreProducto: '$productoData.nombre',
+          totalResenas: 1,
+        },
+      },
+      { $limit: 10 }, // Mostrar solo el Top 10
+    ]);
+    res.json({ success: true, data: stats });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
