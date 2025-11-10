@@ -88,3 +88,69 @@ export const getMyOrders = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
+// ... (imports y las funciones createOrder, getMyOrders)
+
+// --- (GET) Listar TODOS los pedidos (Solo Admin) ---
+// GET /api/ordenes
+export const getAllOrders = async (req, res) => {
+  try {
+    const orders = await Order.find({})
+      .populate('usuario', 'nombre email') // Traer info del usuario
+      .populate('items.producto', 'nombre');
+    res.json({ success: true, data: orders });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// --- (PATCH) Actualizar estado de pedido (Solo Admin) ---
+// PATCH /api/ordenes/:id/status
+export const updateOrderStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { estado } = req.body;
+
+    // Validar que el estado sea uno de los permitidos
+    const estadosPermitidos = ['pendiente', 'procesando', 'enviado', 'entregado', 'cancelado'];
+    if (!estadosPermitidos.includes(estado)) {
+      return res.status(400).json({ success: false, error: 'Estado no válido' });
+    }
+
+    const order = await Order.findByIdAndUpdate(
+      id,
+      { $set: { estado: estado } },
+      { new: true }
+    );
+
+    if (!order) {
+      return res.status(404).json({ success: false, error: 'Pedido no encontrado' });
+    }
+    res.json({ success: true, data: order });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// --- (GET) AGREGACIÓN: Total de pedidos por estado (Solo Admin) ---
+// GET /api/ordenes/stats
+export const getOrderStats = async (req, res) => {
+  try {
+    const stats = await Order.aggregate([
+      // 1. Agrupar por el campo 'estado'
+      {
+        $group: {
+          _id: '$estado',
+          totalPedidos: { $sum: 1 }, // Contar cuántos hay
+          totalVentas: { $sum: '$total' } // Sumar el total de cada pedido
+        }
+      },
+      // 2. Ordenar por el nombre del estado
+      {
+        $sort: { _id: 1 } // 1 = ascendente
+      }
+    ]);
+    res.json({ success: true, data: stats });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
