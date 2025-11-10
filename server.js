@@ -1,7 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv'; // <-- dotenv es clave
 import connectDB from './config/db.js'; // Importa la conexión
-import userRoutes from './routes/user.routes.js'; // <-- IMPORTAR RUTAS
+
 
 // Carga variables de entorno
 dotenv.config();
@@ -10,8 +10,9 @@ dotenv.config();
 connectDB();
 
 // ... (imports de express, dotenv, db, userRoutes)
-import categoryRoutes from './routes/category.routes.js'; // <-- 1. IMPORTAR
-
+import userRoutes from './routes/user.routes.js'; 
+import categoryRoutes from './routes/category.routes.js'; 
+import productRoutes from './routes/product.routes.js';
 // ... (dotenv.config(), connectDB())
 
 const app = express();
@@ -32,8 +33,9 @@ app.get('/', (req, res) => {
 
 // <-- USAR RUTAS -->
 // Le decimos a la app que use /api/usuarios para todas las rutas de user.routes.js
-app.use('/api/usuarios', userRoutes);
+app.use('/api/usuarios', userRoutes); 
 app.use('/api/categorias', categoryRoutes);
+app.use('/api/productos', productRoutes);
 
 // Ponemos el servidor a escuchar
 app.listen(PORT, () => {
