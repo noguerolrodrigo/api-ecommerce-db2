@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/noguerolrodrigo/api-ecommerce-db2/issues"
   },
-  "homepage": "https://github.com/noguerolrodrigo/api-ecommerce-db2#readme"
+  "homepage": "https://github.com/noguerolrodrigo/api-ecommerce-db2#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.3"
+  }
 }
