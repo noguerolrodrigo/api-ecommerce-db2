@@ -45,7 +45,7 @@ export const createReview = async (req, res) => {
 };
 
 // --- (GET) Obtener reseñas de un producto (Público) ---
-// GET /api/resenas/product/:productId [cite: 61]
+// GET /api/resenas/product/:productId
 export const getProductReviews = async (req, res) => {
   try {
     const { productId } = req.params;
@@ -53,6 +53,62 @@ export const getProductReviews = async (req, res) => {
       .populate('usuario', 'nombre'); // Solo mostrar el nombre del usuario
 
     res.json({ success: true, data: reviews });
+  } catch (error)
+    {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// --- (GET) Obtener reseñas de un producto (Público) ---
+// GET /api/resenas/product/:productId [cite: 61]
+export const getTopRatedProducts = async (req, res) => {
+  try {
+    const stats = await Review.aggregate([
+      // --- Etapa 1: Agrupar ($group) ---
+      // Agrupamos todas las reseñas por el campo 'producto'
+      {
+        $group: {
+          _id: '$producto', // Agrupar por ID de producto
+          // --- Operador $avg ---
+          promedioCalificacion: { $avg: '$calificacion' }, // Calcular el promedio
+          // --- Operador $count ---
+          totalResenas: { $sum: 1 }, // Contar cuántas reseñas tiene cada grupo
+        },
+      },
+      // --- Etapa 2: Ordenar ($sort) ---
+      // Ordenamos de mayor a menor promedio
+      {
+        $sort: { promedioCalificacion: -1 }, // -1 = descendente
+      },
+      // --- Etapa 3: Unir ($lookup) ---
+      // Opcional pero recomendado: traemos la info del producto
+      {
+        $lookup: {
+          from: 'products', // Nombre de la colección en MongoDB (¡suele ser plural!)
+          localField: '_id', // El campo de esta colección (Review)
+          foreignField: '_id', // El campo de la colección 'products'
+          as: 'productoData', // Nombre del array donde se guardará
+        },
+      },
+      // --- Etapa 4: Desanidar ($unwind) ---
+      // $lookup devuelve un array, lo "desarmamos" para tener un objeto
+      {
+        $unwind: '$productoData',
+      },
+      // --- Etapa 5: Proyectar ($project) ---
+      // Limpiamos la salida para que sea más clara
+      {
+        $project: {
+          _id: 0, // No mostrar el ID del grupo
+          productoId: '$_id',
+          nombreProducto: '$productoData.nombre',
+          promedioCalificacion: 1, // 1 = mostrar este campo
+          totalResenas: 1,
+        },
+      },
+    ]);
+
+    res.json({ success: true, data: stats });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
