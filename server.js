@@ -9,8 +9,15 @@ dotenv.config();
 // Llama a la función de conexión
 connectDB();
 
-// Inicializamos la app
+// ... (imports de express, dotenv, db, userRoutes)
+import categoryRoutes from './routes/category.routes.js'; // <-- 1. IMPORTAR
+
+// ... (dotenv.config(), connectDB())
+
 const app = express();
+// ... (PORT, app.use(express.json()))
+
+
 
 // Definimos el puerto
 const PORT = process.env.PORT || 8080;
@@ -26,6 +33,7 @@ app.get('/', (req, res) => {
 // <-- USAR RUTAS -->
 // Le decimos a la app que use /api/usuarios para todas las rutas de user.routes.js
 app.use('/api/usuarios', userRoutes);
+app.use('/api/categorias', categoryRoutes);
 
 // Ponemos el servidor a escuchar
 app.listen(PORT, () => {
