@@ -1,4 +1,12 @@
 import express from 'express';
+import dotenv from 'dotenv'; // <-- dotenv es clave
+import connectDB from './config/db.js'; // Importa la conexión
+
+// Carga variables de entorno
+dotenv.config();
+
+// Llama a la función de conexión
+connectDB();
 
 // Inicializamos la app
 const app = express();
