@@ -13,6 +13,8 @@ connectDB();
 import userRoutes from './routes/user.routes.js'; 
 import categoryRoutes from './routes/category.routes.js'; 
 import productRoutes from './routes/product.routes.js';
+import cartRoutes from './routes/cart.routes.js';
+
 // ... (dotenv.config(), connectDB())
 
 const app = express();
@@ -32,10 +34,11 @@ app.get('/', (req, res) => {
 });
 
 // <-- USAR RUTAS -->
-// Le decimos a la app que use /api/usuarios para todas las rutas de user.routes.js
+// Le decimos a la app que use /api/usuarios para todas las rutas de routes.js
 app.use('/api/usuarios', userRoutes); 
 app.use('/api/categorias', categoryRoutes);
 app.use('/api/productos', productRoutes);
+app.use('/api/carrito', cartRoutes);
 
 // Ponemos el servidor a escuchar
 app.listen(PORT, () => {
