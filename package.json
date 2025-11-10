@@ -1,0 +1,21 @@
+{
+  "name": "api-ecommerce-db2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/noguerolrodrigo/api-ecommerce-db2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/noguerolrodrigo/api-ecommerce-db2/issues"
+  },
+  "homepage": "https://github.com/noguerolrodrigo/api-ecommerce-db2#readme"
+}
